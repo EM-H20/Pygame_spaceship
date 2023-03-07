@@ -14,13 +14,32 @@ pygame.display.set_caption(title)
 
 # 3. 게임내 필요한 설정
 clock = pygame.time.Clock()
-spaceship = pygame.image.load(
-    "C:/Users/82108/Desktop/workspace/image/spaceship.png").convert_alpha()
-spaceship = pygame.transform.scale(spaceship, (50, 80))
 
-spaceship_x1, spaceship_y1 = spaceship.get_size()
-spaceship_x2 = round(size[0] / 2) - spaceship_x1 / 2
-spaceship_y2 = size[1] - spaceship_y1 - 15
+class obj:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+
+    def put_img(self, address):
+        if address[-3:] == "png":
+            self.img = pygame.image.load(address).convert_alpha()
+        else:
+            self.img = pygame.image.load(address)
+            self.sx, self.sy = self.img.get_size()
+
+    def change_size(self, sx, sy):
+        self.img = pygame.transform.scale(self.img, (sx, sy))
+        self.sx, self.sy = self.img.get_size()
+
+    def show(self):
+        screen.blit(self.img, (self.x, self.y))
+
+ss = obj()
+ss.put_img("C:/Users/82108/Desktop/workspace/image/spaceship.png")
+ss.change_size(50, 80)
+
+ss.x = round(size[0] / 2 - ss.sx / 2)
+ss.y = size[1] - ss.sy - 15
 
 
 black = (0, 0, 0)
@@ -42,7 +61,8 @@ while SB == 0:
 
     # 4-4, 그리기
     screen.fill(black)
-    screen.blit(spaceship, (spaceship_x2, spaceship_y2))
+    ss.show()
+
     # 4-5, 업데이트
     pygame.display.flip()
 
