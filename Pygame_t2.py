@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Clone coding
 import pygame
+import random
 
 # 1. 게임 초기화
 pygame.init()
@@ -48,14 +49,16 @@ ss.move = 7
 left_go = False
 right_go = False
 space_go = False
+
 m_list = []
+a_list = []
 
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-
 # 4. 메인 이벤트
 SB = 0
+k = 0 #미사일 지연
 while SB == 0:
      # 4-1, FPS 설정
     clock.tick(60)
@@ -64,26 +67,23 @@ while SB == 0:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             SB = 1
-            
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 left_go = True
             elif event.key == pygame.K_RIGHT:
                 right_go = True
-            elif event.type == pygame.K_SPACE:
-                space_go = True   
+            elif event.key == pygame.K_SPACE:
+                space_go = True
+                k = 0
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 left_go = False
             elif event.key == pygame.K_RIGHT:
                 right_go = False
-            elif event.type == pygame.K_SPACE:
-                space_go = False
-
-
-        
-
+            elif event.key == pygame.K_SPACE:
+                space_go = False   
 
     # 4-3, 입력, 시간에 따른 변화
     if left_go == True:
@@ -96,10 +96,10 @@ while SB == 0:
         if ss.x >= size[0] - ss.sx:
             ss.x = size[0] - ss.sx
     
-    if space_go == True:
+    if space_go == True and k % 6 == 0:         
         mm = obj()  # misile
         mm.put_img("C:/Users/82108/Desktop/workspace/image/missile.png")
-        mm.change_size(5, 15)
+        mm.change_size(15, 20)
 
         mm.x = round(ss.x + ss.sx / 2 - mm.sx / 2)
         mm.y = ss.y - mm.y - 10
@@ -107,9 +107,10 @@ while SB == 0:
 
         m_list.append(mm)
 
+    k += 1
     d_list = []
     for i in range(len(m_list)):
-        m = m_list
+        m = m_list[i]
         m.y -= m.move
 
         if m.y <= -m.sy:
@@ -118,8 +119,27 @@ while SB == 0:
     for d in d_list:
         del m_list[d]
 
+    if random.random() > 0.98:
+        aa = obj()  # devil
+        aa.put_img("C:/Users/82108/Desktop/workspace/image/devil.png")
+        aa.change_size(50, 50)
 
+        aa.x = random.randrange(0, size[0] - aa.sx - round(ss.sx / 2))
+        aa.y = 10
+        aa.move = 1
 
+        a_list.append(aa)
+
+    d_list = []
+    for i in range(len(a_list)):
+        a = a_list[i]
+        a.y += a.move
+
+        if a.y >= size[1]:
+            d_list.append(i)
+    
+    for d in d_list:
+        del a_list[d]
 
     # 4-4, 그리기       
     screen.fill(black)
@@ -127,6 +147,8 @@ while SB == 0:
 
     for m in m_list:
         m.show()
+    for a in a_list: 
+        a.show()
 
     # 4-5, 업데이트
     pygame.display.flip()
