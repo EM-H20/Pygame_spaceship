@@ -2,6 +2,7 @@
 # Clone coding
 import pygame
 import random
+import sys
 
 # 1. 게임 초기화
 pygame.init()
@@ -15,7 +16,6 @@ pygame.display.set_caption(title)
 
 # 3. 게임내 필요한 설정
 clock = pygame.time.Clock()
-
 
 class obj:
     def __init__(self):
@@ -46,9 +46,6 @@ ss.x = round(size[0] / 2 - ss.sx / 2)
 ss.y = size[1] - ss.sy - 15
 
 ss.move = 7
-left_go = False
-right_go = False
-space_go = False
 
 m_list = []
 a_list = []
@@ -57,46 +54,29 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 # 4. 메인 이벤트
-SB = 0
 k = 0 #미사일 지연
-while SB == 0:
+while True:
      # 4-1, FPS 설정
     clock.tick(60)
 
     # 4-2, 각종 입력 감지
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            SB = 1
+            # 5 게임종료
+            sys.exit()
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                left_go = True
-            elif event.key == pygame.K_RIGHT:
-                right_go = True
-            elif event.key == pygame.K_SPACE:
-                space_go = True
-                k = 0
-
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                left_go = False
-            elif event.key == pygame.K_RIGHT:
-                right_go = False
-            elif event.key == pygame.K_SPACE:
-                space_go = False   
-
-    # 4-3, 입력, 시간에 따른 변화
-    if left_go == True:
+    key_event = pygame.key.get_pressed()
+    if key_event[pygame.K_LEFT]:
         ss.x -= ss.move
         if ss.x <= 0:
             ss.x = 0
 
-    elif right_go == True:
+    if key_event[pygame.K_RIGHT]:
         ss.x += ss.move
-        if ss.x >= size[0] - ss.sx:
+        if ss.x >= size[0] - ss.sx: 
             ss.x = size[0] - ss.sx
-    
-    if space_go == True and k % 6 == 0:         
+
+    if key_event[pygame.K_SPACE] and k % 6 == 0:
         mm = obj()  # misile
         mm.put_img("C:/Users/82108/Desktop/workspace/image/missile.png")
         mm.change_size(15, 20)
@@ -104,10 +84,11 @@ while SB == 0:
         mm.x = round(ss.x + ss.sx / 2 - mm.sx / 2)
         mm.y = ss.y - mm.y - 10
         mm.move = 15
-
         m_list.append(mm)
+        k = 0
 
     k += 1
+
     d_list = []
     for i in range(len(m_list)):
         m = m_list[i]
@@ -119,7 +100,7 @@ while SB == 0:
     for d in d_list:
         del m_list[d]
 
-    if random.random() > 0.98:
+    if random.random() > 0.98: # 랜덤하게 생성 되는 장애물
         aa = obj()  # devil
         aa.put_img("C:/Users/82108/Desktop/workspace/image/devil.png")
         aa.change_size(50, 50)
@@ -129,7 +110,8 @@ while SB == 0:
         aa.move = 1
 
         a_list.append(aa)
-
+        
+    # 장애물 삭제 되는 부분
     d_list = []
     for i in range(len(a_list)):
         a = a_list[i]
@@ -152,6 +134,3 @@ while SB == 0:
 
     # 4-5, 업데이트
     pygame.display.flip()
-
-# 5 게임종료
-pygame.quit()
